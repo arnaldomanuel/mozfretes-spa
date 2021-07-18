@@ -2,7 +2,7 @@ import axios from "axios";
 import store from "../store/index";
 
 export const authClient = axios.create({
-  baseURL: 'http://localhost:8000/',
+  baseURL: 'http://mozfretesapi.expert.co.mz/',
   withCredentials: true,
 });
 
