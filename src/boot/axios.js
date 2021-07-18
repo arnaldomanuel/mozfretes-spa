@@ -3,7 +3,7 @@ import axios from 'axios'
 import store from "../store/index";
 
 const axiosInstance = axios.create({
-  baseURL: 'http://mozfretesapi.expert.co.mz/',
+  baseURL: 'http://mozfretesapi.expert.co.mz/api',
   withCredentials: true,
 });
 /*http://localhost:8000/*/
