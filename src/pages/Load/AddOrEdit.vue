@@ -8,46 +8,48 @@
 
     >
       <q-card-section>
-        <div class="text-h6">Adicionar carga</div>
+        <div class="text-h6">{{titlePage}}</div>
 
       </q-card-section>
 
       <q-card-section class="q-pt-none">
         <q-form
-          @submit="onSubmit"
-
           class="q-gutter-md"
+          ref="myForm"
+          @submit="onSubmit"
         >
 
           <div class="row">
-                        <div class="col-12  q-mt-md">
-                <q-file
-                  name="poster_file"
-                  v-model="file"
-                  filled
-                  use-chips
-                  accept=".jpeg, .png, .jpg"
-                  max-file-size="1024"
-                  @rejected="onRejectedLoadPic"
-                  class="q-mr-lg"
-                  label="Carregue uma foto da carga"
-                >  <template v-slot:prepend>
-                  <q-icon name="insert_photo" />
-                </template> </q-file>
-              </div>
-
+            <div class="col-12  q-mt-md">
+              <q-file
+                v-model="file"
+                accept=".jpeg, .png, .jpg"
+                class="q-mr-lg"
+                filled
+                :hint="hintImage"
+                label="Carregue uma foto da carga"
+                max-file-size="1024000"
+                name="poster_file"
+                use-chips
+                @rejected="onRejectedLoadPic"
+              >
+                <template v-slot:prepend>
+                  <q-icon name="insert_photo"/>
+                </template>
+              </q-file>
             </div>
+          </div>
 
           <div class="row">
             <div class="col-12 col-lg-6">
               <q-input
-                filled
-                class="q-mr-lg"
                 v-model="load.from_location"
-                label="Ponto de partida"
-                hint="Seja específico e evite erros ortográficos"
-                lazy-rules
                 :rules="[ val => val && val.length > 0 || 'Campo obrigatório']"
+                class="q-mr-lg"
+                filled
+                hint="Seja específico e evite erros ortográficos"
+                label="Ponto de partida"
+                lazy-rules
               >
 
                 <template v-slot:prepend>
@@ -58,17 +60,16 @@
             </div>
             <div class="col-12 col-lg-6">
               <q-input
-                filled
-                class="q-mr-lg"
-                type="number"
-                step=".01"
                 v-model="load.to_location"
-                label="Local de destino"
-                lazy-rules
                 :rules="[
                 val => val !== null && val !== '' || 'Campo obrigatório',
-                val => val > 0  || 'Peso deve possuir valor positivo'
+
               ]"
+                class="q-mr-lg"
+                filled
+                label="Local de destino"
+                lazy-rules
+
               >
                 <template v-slot:prepend>
                   <q-icon name="add_location"/>
@@ -78,14 +79,15 @@
 
 
             <div class="col-12 col-lg-6 q-mt-md">
-              <q-input class="q-mr-lg" @click="showDateTutorial=true" hint="Clique no ícone de calendário e depois no relógio"
-                       label="Data de partida" readonly filled v-model="load.from_date">
+              <q-input v-model="load.from_date" class="q-mr-lg"
+                       filled
+                       hint="Clique no ícone de calendário e depois no relógio" label="Data de partida" readonly @click="showDateTutorial=true">
                 <template v-slot:prepend>
-                  <q-icon color="primary" name="event" class="cursor-pointer">
-                    <q-popup-proxy transition-show="scale" transition-hide="scale">
+                  <q-icon class="cursor-pointer" color="primary" name="event">
+                    <q-popup-proxy transition-hide="scale" transition-show="scale">
                       <q-date v-model="load.from_date" mask="YYYY-MM-DD HH:mm">
                         <div class="row items-center justify-end">
-                          <q-btn v-close-popup label="Fechar" color="primary" flat/>
+                          <q-btn v-close-popup color="primary" flat label="Fechar"/>
                         </div>
                       </q-date>
                     </q-popup-proxy>
@@ -93,11 +95,11 @@
                 </template>
 
                 <template v-slot:append>
-                  <q-icon color="primary" name="access_time" class="cursor-pointer">
-                    <q-popup-proxy transition-show="scale" transition-hide="scale">
-                      <q-time v-model="load.from_date" mask="YYYY-MM-DD HH:mm" format24h>
+                  <q-icon class="cursor-pointer" color="primary" name="access_time">
+                    <q-popup-proxy transition-hide="scale" transition-show="scale">
+                      <q-time v-model="load.from_date" format24h mask="YYYY-MM-DD HH:mm">
                         <div class="row items-center justify-end">
-                          <q-btn v-close-popup label="Fechar" color="primary" flat/>
+                          <q-btn v-close-popup color="primary" flat label="Fechar"/>
                         </div>
                       </q-time>
                     </q-popup-proxy>
@@ -105,15 +107,16 @@
                 </template>
               </q-input>
             </div>
-            <di class="col-12 col-lg-6 q-mt-md">
-              <q-input class="q-mr-lg" @click="showDateTutorial=true" hint="Clique no ícone de calendário e depois no relógio"
-                       label="Data de destino" readonly filled v-model="load.to_date">
+            <div class="col-12 col-lg-6 q-mt-md">
+              <q-input v-model="load.to_date" class="q-mr-lg"
+                       filled
+                       hint="Clique no ícone de calendário e depois no relógio" label="Data de destino" readonly @click="showDateTutorial=true">
                 <template v-slot:prepend>
-                  <q-icon color="primary" name="event" class="cursor-pointer">
-                    <q-popup-proxy transition-show="scale" transition-hide="scale">
+                  <q-icon class="cursor-pointer" color="primary" name="event">
+                    <q-popup-proxy transition-hide="scale" transition-show="scale">
                       <q-date v-model="load.to_date" mask="YYYY-MM-DD HH:mm">
                         <div class="row items-center justify-end">
-                          <q-btn v-close-popup label="Fechar" color="primary" flat/>
+                          <q-btn v-close-popup color="primary" flat label="Fechar"/>
                         </div>
                       </q-date>
                     </q-popup-proxy>
@@ -121,34 +124,34 @@
                 </template>
 
                 <template v-slot:append>
-                  <q-icon color="primary" name="access_time" class="cursor-pointer">
-                    <q-popup-proxy transition-show="scale" transition-hide="scale">
-                      <q-time v-model="load.to_date" mask="YYYY-MM-DD HH:mm" format24h>
+                  <q-icon class="cursor-pointer" color="primary" name="access_time">
+                    <q-popup-proxy transition-hide="scale" transition-show="scale">
+                      <q-time v-model="load.to_date" format24h mask="YYYY-MM-DD HH:mm">
                         <div class="row items-center justify-end">
-                          <q-btn v-close-popup label="Fechar" color="primary" flat/>
+                          <q-btn v-close-popup color="primary" flat label="Fechar"/>
                         </div>
                       </q-time>
                     </q-popup-proxy>
                   </q-icon>
                 </template>
               </q-input>
-            </di>
+            </div>
             <div class="col-12 col-lg-6 q-mt-md">
               <q-input
-                filled
-                class="q-mr-lg"
-                type="number"
-                step=".01"
                 v-model="load.weight"
-                label="Capacidade máxima de carga em KG"
-                lazy-rules
                 :rules="[
           val => val !== null && val !== '' || 'Campo obrigatório',
           val => val > 0  || 'Peso deve possuir valor positivo'
         ]"
+                class="q-mr-lg"
+                filled
+                label="Capacidade máxima de carga em KG"
+                lazy-rules
+                step=".01"
+                type="number"
               >
                 <template v-slot:prepend>
-                  <q-icon name="add_location" />
+                  <q-icon name="add_location"/>
                 </template>
               </q-input>
             </div>
@@ -156,11 +159,11 @@
 
             <div class="col-12 col-lg-6 q-mt-md">
               <q-input
-                filled
-                class="q-mr-lg"
                 v-model="load.phone_journey"
+                class="q-mr-lg"
+                filled
                 hint="Se deixar em branco, os contactos da empresa serão usados"
-                label="Contacto na viagem"
+                label="Contacto na carga"
                 lazy-rules
 
               >
@@ -174,7 +177,7 @@
           </div>
 
           <div>
-            <q-btn label="Criar" type="submit" color="primary"/>
+            <q-btn color="primary" label="Criar" type="submit"/>
 
           </div>
         </q-form>
@@ -195,22 +198,27 @@
           </q-card-section>
 
           <q-card-actions align="right">
-            <q-btn flat label="OK" color="primary" v-close-popup/>
+            <q-btn v-close-popup color="primary" flat label="OK"/>
           </q-card-actions>
         </q-card>
       </q-dialog>
     </template>
+
+
   </div>
 </template>
 
 
 <script>
 import HeaderFreightJourney from "./HeaderLoad"
+import Loading from "components/Loading";
+import Error from "components/Error";
 
 export default {
   components: {HeaderFreightJourney},
   data() {
     return {
+      editPage:false,
       dialogDate: false,
       showDateTutorial: false,
       load: {
@@ -218,41 +226,86 @@ export default {
         description: '',
         from_location: '',
         to_location: '',
-        from_date: '',
-        to_date: '',
+        from_date: null,
+        to_date: null,
         phone_journey: '',
         status: '',
         id: '',
-        weight:'',
-        picture:null,
+        weight: '',
+        picture: null,
         from_date_date_part: '',
         from_date_hour_part: '',
       },
-      options:[],
+      options: [],
       file: null,
     }
   },
   methods: {
     onSubmit() {
 
-    },
-    onRejectedLoadPic() {
-      alert(233)
-    },
-    filterFn (val, update) {
-      if (val === '') {
-        update(() => {
-          this.options=[]
-          this.trucks.forEach(v=>{ this.options.push(v.name) })
-        })
+      if(this.load.from_date==null){
+          Error.openNotify("Preencha a data de partida", 5000)
+        return
+      }
+      if(this.load.to_date==null){
+        Error.openNotify("Preencha a data de destino", 5000)
         return
       }
 
-      update(() => {
-        const needle = val.toLowerCase()
-        this.options= this.trucks.filter(v => v.name.toLowerCase().indexOf(needle) > -1)
-        /*this.options=[]
-        trucksFiltered.forEach(v=>{ this.options.push(v.name) })*/
+      if (this.$refs.myForm !== null && this.$refs.myForm !== undefined) {
+        this.$refs.myForm.validate().then(success => {
+          Loading.openNotify()
+          let formData= new FormData()
+
+         formData.append("load", JSON.stringify(this.load))
+          formData.append("picture", this.file)
+
+          let submit = null
+          if (this.editPage){
+            if(this.file){
+              formData.append("photo", this.file);
+            }
+
+            submit= this.$axios.post('load/'+this.load.id,formData)
+          }else{
+            formData.append("photo", this.file);
+            submit= this.$axios.post('/load',formData)
+          }
+          submit.then(done=>{
+            console.log(done)
+            Loading.closeNotify()
+            Loading.openSuccess(this.successMessage)
+            this.$router.push(this.editPage ? '/carga/'+this.load.id:'/carga')
+          }).catch(error=>{
+            console.log(error)
+            Loading.closeNotify()
+          })
+        })
+      }
+    },
+    onRejectedLoadPic() {
+      Error.openNotify("Imagem deve ter menos de 1MB")
+    },
+  },
+  computed:{
+    successMessage(){
+      return this.editPage ? 'Carga editada com sucesso' : 'Carga criada com sucesso'
+    },
+    hintImage(){
+      return this.editPage ? 'Se não quiser mudar a foto da carga, não carregue e nem mexa' : ''
+    },
+    titlePage(){
+      return this.editPage ?'Actualizar carga': 'Adicionar carga'
+    }
+  },
+  mounted() {
+    let url = location.href
+    if (url.indexOf("edit")>=0){
+      this.editPage = true
+      let urlArray = url.split("/")
+      let id = urlArray[urlArray.length-1]
+      this.$axios.get('load/'+id).then(done=>{
+        this.load = done.data
       })
     }
   }

@@ -1,6 +1,6 @@
 
 import router from "../../router/index";
-import AuthServices from "src/Services/AuthServices";
+import AuthService from "src/Services/AuthServices";
 
 export default {
   logout({ commit, dispatch }) {
@@ -12,20 +12,21 @@ export default {
           router.push({ path: "/login" });
       })
       .catch((error) => {
-        commit("SET_ERROR", getError(error));
+
       });
   },
   async getAuthUser({ commit }) {
     commit("SET_LOADING", true);
     try {
       const response = await AuthService.getAuthUser();
-      commit("SET_USER", response.data.data);
+      console.log(response.data)
+
+      commit("SET_USER", response.data);
       commit("SET_LOADING", false);
-      return response.data.data;
+      return response.data;
     } catch (error) {
       commit("SET_LOADING", false);
       commit("SET_USER", null);
-      commit("SET_ERROR", getError(error));
     }
   },
   setGuest(context, { value }) {

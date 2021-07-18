@@ -78,6 +78,16 @@ const routes = [
       { path: '*', component: () => import('pages/Load/Show.vue') }
     ]
   },
+  {
+    path: '/empresa',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      { path: '', component: () => import('pages/Company/Index.vue') },
+      { path: 'criar', component: () => import('pages/Company/AddOrEdit.vue') },
+      { path: 'editar/*', component: () => import('pages/Company/AddOrEdit.vue') },
+      { path: '*', component: () => import('pages/Company/Show.vue') }
+    ]
+  },
 
 
   {

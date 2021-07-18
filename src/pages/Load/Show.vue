@@ -11,7 +11,7 @@
             <div class="row">
               <div class=" col-12 col-lg-6 q-mr-lg">
                 <q-img
-                  src="~assets/img/truck.jpg"
+                  :src="imagePath"
                 >
                   <div class="absolute-bottom text-body1 text-center">
                     Foto da carga
@@ -19,7 +19,7 @@
                 </q-img>
                 <div class="q-mt-md">
                   <q-btn  class="q-mr-md" color="secondary" icon="edit" :to="'/carga/editar/'+load.id" >Editar</q-btn>
-                  <q-btn color="negative" icon="delete" >Apagar</q-btn>
+                  <q-btn color="negative" @click="confirm=true" icon="delete" >Apagar</q-btn>
                 </div>
               </div>
               <div class="col-12 col-lg-4">
@@ -46,16 +46,23 @@
 
       <q-separator />
     </q-card>
+      <template>
+        <q-dialog v-model="confirm" persistent>
+          <confirm-delete-load-dialog :load="load"/>
+        </q-dialog>
+      </template>
     </div>
 </template>
 
 
 <script>
 import HeaderLoad from "./HeaderLoad.vue"
+import ConfirmDeleteLoadDialog from "src/dialogs/ConfirmDeleteLoadDialog";
 export default {
-    components: {HeaderLoad},
+    components: {HeaderLoad, ConfirmDeleteLoadDialog},
     data(){
         return {
+          confirm:false,
       load: {
         name: '',
         description: '',
@@ -75,16 +82,27 @@ export default {
         }
     },
   computed:{
-
+    imagePath(){
+      console.log(this.$apiPath+this.load.picture)
+      return this.$apiPath+this.load.picture
+    }
   },
     methods:{
-        onSubmit(){
 
-        },
-        onRejectedTruckPic(){
+    },
+  mounted() {
+    let urlArray= location.href.split("/")
+    let id = urlArray[urlArray.length-1]
+    console.log(
+      "id", id
+    )
+    console.log(this.$apiPath)
+    this.$axios.get('load/'+id).then(done=>{
 
-        },
-    }
+      this.load=done.data
+      console.log( this.load)
+    })
+  }
 
 }
 </script>

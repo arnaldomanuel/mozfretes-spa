@@ -11,204 +11,236 @@
       Seja Bem Vindo a Moz Fretes
     </div>
     <div>
-<div >
-<div  class="row">
-        <div style="margin:0 auto;" class="col-lg-9">
+      <div>
+        <div class="row">
+          <div class="col-lg-9" style="margin:0 auto;">
             <template>
-  <div class="q-pa-md">
-      
-    <q-stepper
-      v-model="step"
-      ref="stepper"
-     contracted
-      color="primary"
-     
-      animated
-    >
-      <q-step
-        :name="1"
-        title="Select campaign settings"
-        icon="settings"
-        :done="step > 1"
-      >
-        <div>
-            <div class="row">
-                <div class="col-12">
-                    <div class="text-h5 ">Ficamos felizes em seu interesse em utilizar nosso sistema.</div>
-                    <div class="q-mt-md text-body1">Precisamos saber mais algumas coisas antes de você poder utilizar o Moz Fretes para os seus transportes. </div>
-                
-                </div>
-                 <div class="q-pa-md" style="max-width: 400px">
+              <div class="q-pa-md">
 
-    
+                <q-stepper
+                  ref="stepper"
+                  v-model="step"
+                  animated
+                  color="primary"
 
-  </div>
+                  contracted
+                >
+                  <q-step
+                    :done="step > 1"
+                    :name="1"
+                    icon="settings"
+                    title="Select campaign settings"
+                  >
+                    <div>
+                      <div class="row">
+                        <div class="col-12">
+                          <div class="text-h5 ">Ficamos felizes em seu interesse em utilizar nosso sistema.</div>
+                          <div class="q-mt-md text-body1">Precisamos saber mais algumas coisas antes de você poder
+                            utilizar o Moz Fretes para os seus transportes.
+                          </div>
 
-                <div class="q-mt-md col-12">
-                    <div class="text-body2 q-mb-md">Como te descreves?</div> 
-                <q-select outlined v-model="user.type.value" :options="options" :dense="dense" :options-dense="denseOpts">
-                    <template v-slot:prepend>
-                        <q-icon name="person" />
-                    </template>
-                     <template v-slot:hint>
-                    Quem é você?
-                    </template>
-                </q-select>
-                </div>
-            </div>
-        </div>
-      </q-step>
+                        </div>
+                        <div class="q-pa-md" style="max-width: 400px">
 
-      <q-step
-        :name="2"
-        title="Create an ad group"
-        caption="Optional"
-        icon="create_new_folder"
-        :done="step > 2"
-      >
-       <div >
-                <div >
-                    <div class="q-mt-md q-ml-md text-body1">Precisamos saber mais algumas coisas antes de você poder utilizar o Moz Fretes para os seus transportes. </div>
-                
-    
-         <div class="q-pa-md">
-           <q-form
-      
-      @submit="onSubmit"
-    
-      ref="myForm"
-      >
-    <div class="q-gutter-md" >
-     
-       <q-input color="primary" filled 
-       lazy-rules
-       v-model="user.name" 
-       :rules="[
+
+                        </div>
+
+                        <div class="q-mt-md col-12">
+                          <div class="text-body2 q-mb-md">Como te descreves?</div>
+                          <q-select v-model="user.company_type" :dense="dense" :options="options"
+                                    :options-dense="denseOpts" outlined>
+                            <template v-slot:prepend>
+                              <q-icon name="person"/>
+                            </template>
+                            <template v-slot:hint>
+                              Quem é você?
+                            </template>
+                          </q-select>
+                        </div>
+                      </div>
+                    </div>
+                  </q-step>
+
+                  <q-step
+                    :done="step > 2"
+                    :name="2"
+                    caption="Optional"
+                    icon="create_new_folder"
+                    title="Create an ad group"
+                  >
+                    <div>
+                      <div>
+                        <div class="q-mt-md q-ml-md text-body1">Precisamos saber mais algumas coisas antes de você poder
+                          utilizar o Moz Fretes para os seus transportes.
+                        </div>
+
+                        <div>
+                          <ul>
+                            <li style="color:red" :key="message" v-for="message in messages" >{{message}}</li>
+                          </ul>
+                        </div>
+
+
+                        <div class="q-pa-md">
+                          <q-form
+
+                            ref="myForm"
+
+                            @submit="onSubmit"
+                          >
+                            <div class="q-gutter-md">
+
+                              <q-input v-model="user.name" :rules="[
           val => val !== null && val !== '' || 'Campo obrigatório',
           val => val.length > 5  || 'Nome deve possuir mais de 5 caractéres e no máximo 255'
         ]"
-       label="Nome">
-        <template v-slot:prepend>
-          <q-icon name="home" />
-        </template>
-      </q-input>
+                                       color="primary"
+                                       filled
 
-       <q-input color="primary"  ref="email" lazy-rules  filled v-model="user.email" type="email" 
-           :rules="[
+                                       label="Nome"
+                                       lazy-rules>
+                                <template v-slot:prepend>
+                                  <q-icon name="home"/>
+                                </template>
+                              </q-input>
+
+                              <q-input ref="email" v-model="user.email" :rules="[
           val => val !== null && val !== '' || 'Campo obrigatório',
           val => this.validEmail()  || 'Email inválido',
-        ]"
-          label="Email">
-        <template v-slot:prepend>
-          <q-icon name="email" />
-        </template>
-      </q-input>
+        ]" color="primary" filled label="Email"
+                                       lazy-rules
+                                       type="email">
+                                <template v-slot:prepend>
+                                  <q-icon name="email"/>
+                                </template>
+                              </q-input>
 
-       <q-input color="primary" ref="password" :type="'password'" lazy-rules  filled v-model="user.password"
-       :rules="[
+                              <q-input ref="password" v-model="user.password" :rules="[
           val => val !== null && val !== '' || 'Campo obrigatório',
           val => val.length > 7  || 'Senha deve possuir no mínimo 7 caractéres'
-        ]"
-        label="Senha">
-        <template v-slot:prepend>
-          <q-icon name="password" />
-        </template>
-      </q-input>
+        ]" :type="'password'" color="primary" filled
+                                       label="Senha"
+                                       lazy-rules>
+                                <template v-slot:prepend>
+                                  <q-icon name="password"/>
+                                </template>
+                              </q-input>
 
-       <q-input color="primary"  :type="'password'" 
-         :rules="[
+                              <q-input ref="password_confirmation" v-model="user.password_confirmation"
+                                       :rules="[
           val => val !== null && val !== '' || 'Campo obrigatório',
-          val => val !== this.user.password  || 'Senha deve ser igual a anterior'
-        ]" 
-        lazy-rules
-          ref="password_confirmation"
-       filled v-model="user.password_confirmation" label="Repita a senha">
-        <template v-slot:prepend>
-          <q-icon name="password" />
-        </template>
-      </q-input>
-     
-    </div>
-     <q-btn v-if="step==2"  label="Criar conta" type="submit" color="primary"/>
-    </q-form>
-       </div>
-     
-        </div>
-       </div>
-      
-      </q-step>
+          val => val === this.user.password  || 'Senha deve ser igual a anterior'
+        ]"
+                                       :type="'password'"
+                                       color="primary"
+                                       filled label="Repita a senha" lazy-rules>
+                                <template v-slot:prepend>
+                                  <q-icon name="password"/>
+                                </template>
+                              </q-input>
 
-    
+                            </div>
+                            <q-btn v-if="step==2" color="primary" label="Criar conta" type="submit"/>
+                          </q-form>
+                        </div>
 
-      <template v-slot:navigation>
-        <q-stepper-navigation>
-         
-          <q-btn v-if="step==1 && user.type.value" @click="nextStepper()" color="primary" :label="'Continuar'" />
-          <q-btn v-if="step > 1" flat color="primary" @click="$refs.stepper.previous()" label="Voltar" class="q-ml-sm" />
-        </q-stepper-navigation>
-      </template>
-    </q-stepper>
-     
-  </div>
-</template>
+                      </div>
+                    </div>
+
+                  </q-step>
+
+
+                  <template v-slot:navigation>
+                    <q-stepper-navigation>
+
+                      <q-btn v-if="step==1 && user.company_type" :label="'Continuar'" color="primary"
+                             @click="nextStepper()"/>
+                      <q-btn v-if="step > 1" class="q-ml-sm" color="primary" flat label="Voltar"
+                             @click="$refs.stepper.previous()"/>
+                    </q-stepper-navigation>
+                  </template>
+                </q-stepper>
+
+              </div>
+            </template>
+          </div>
         </div>
+      </div>
     </div>
-</div>
-    </div>
+
   </div>
 </template>
 
 <script>
+import AuthService from "src/Services/AuthServices";
+import Loading from "components/Loading";
+import Error from "components/Error";
 export default {
+
   data() {
     return {
       step: 1,
-       options: [
-           {
-                label: 'Eu sou uma transportadora de cargas',
-                value: '1',
-           },
-            {
-                label: 'Eu preciso de transportar mercadoria',
-                value: '2',
-           },
-            {
-                label: 'Eu sou uma empresa que faz cargas e mercadorias',
-                value: '3',
-           },
-        
-      ],
+      options: [
+        {
+          label: 'Eu sou uma empresa de fretes',
+          value: '1',
+        },
+        {
+          label: 'Eu preciso de transportadora mercadoria',
+          value: '2',
+        },
+        {
+          label: 'Eu sou uma empresa que faz cargas e mercadorias',
+          value: '3',
+        },
 
-        model:'',
+      ],
+      messages : [],
+      model: '',
       dense: false,
       emailTouched: false,
-      user:{
-          type:{},
-          email:'',
-          name:'',
-          password: '',
-          password_confirmation: '',
+      user: {
+        company_type: '',
+        email: '',
+        name: '',
+        password: '',
+        password_confirmation: '',
       },
       denseOpts: false
     };
   },
   methods: {
-    validEmail: function(){
+    validEmail: function () {
       const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
       return re.test(String(this.user.email).toLowerCase())
     },
-    nextStepper(){
+    nextStepper() {
       this.$refs.stepper.next()
     },
-     onSubmit () {
-       
+    onSubmit() {
+
       if (this.$refs.myForm !== null && this.$refs.myForm !== undefined) {
         this.$refs.myForm.validate().then(success => {
           if (success) {
-            console.log('sucess');
-          }
-          else {
-            alert(29)
+            this.messages=[]
+            Loading.openNotify()
+            AuthService.registerUser(this.user).then((done) => {
+
+              AuthService.getAuthUser().then(done=>{
+
+                this.$router.push('/perfil-empresa')
+                console.log(done)
+              })
+              this.$router.push('/perfil-empresa')
+            }).catch(({response}) => {
+              Error.openNotify("Falha ao criar conta.",5000)
+              let errors = response.data.errors
+              Object.keys(errors).forEach(index=>{this.messages.push(errors[index].toString().replaceAll(",", "\n"))})
+              console.log()
+              Loading.closeNotify()
+            });
+            Loading.closeNotify()
+          } else {
             console.log('no');
           }
         })
@@ -218,21 +250,24 @@ export default {
 
   },
   computed: {
-    isEmailValid:function(){
-      
-      if(!this.user)
+    isEmailValid: function () {
+
+      if (!this.user)
         return true
 
       const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
       return re.test(String(this.user.email).toLowerCase())
-     
+
     },
-  }, 
-  
+  },
+  mounted() {
+
+  }
+
 };
 </script>
 
-<style >
+<style>
 .q-spinner {
   margin: 0 auto;
   display: block;;

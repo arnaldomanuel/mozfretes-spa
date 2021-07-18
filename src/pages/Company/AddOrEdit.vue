@@ -40,13 +40,14 @@
               <q-input
                 filled
                 class="q-mr-lg"
+                type="number"
+                step=".01"
                 v-model="freight_journey.to_location"
                 label="Local de destino"
                 lazy-rules
                 :rules="[
                 val => val !== null && val !== '' || 'Campo obrigatório',
-
-
+                val => val > 0  || 'Peso deve possuir valor positivo'
               ]"
               >
                 <template v-slot:prepend>
@@ -112,7 +113,7 @@
                 </template>
               </q-input>
             </div>
-            <div v-if="!editPage" class="col-12 col-lg-6 q-mt-md">
+            <div class="col-12 col-lg-6 q-mt-md">
               <q-select
                 filled
                 v-model="freight_journey.truck_id"
@@ -159,7 +160,7 @@
                     type="number"
                     step=".01"
                     lazy-rules
-                    :rules="[ val => val && val > 0 || 'Campo obrigatório']"
+                    :rules="[ val => val && val.length > 0 || 'Campo obrigatório']"
                   >
 
                     <template v-slot:prepend>
@@ -177,6 +178,7 @@
                 hint="Se deixar em branco, os contactos da empresa serão usados"
                 label="Contacto na viagem"
                 lazy-rules
+                :rules="[ val => val && val.length > 0 || 'Campo obrigatório']"
               >
                 <template v-slot:prepend>
                   <q-icon name="phone"/>
@@ -194,7 +196,7 @@
           </div>
 
           <div>
-            <q-btn :label="editPage? 'Actualizar':'Criar'" type="submit" color="primary"/>
+            <q-btn label="Criar" type="submit" color="primary"/>
 
           </div>
         </q-form>
@@ -225,9 +227,7 @@
 
 
 <script>
-import HeaderFreightJourney from "./HeaderFreightJourney.vue"
-import Loading from "components/Loading";
-import Error from "components/Error";
+import HeaderFreightJourney from "./HeaderCompany.vue"
 
 export default {
   components: {HeaderFreightJourney},
@@ -251,28 +251,32 @@ export default {
         from_date_date_part: '',
         from_date_hour_part: '',
       },
-      editPage:false,
-      trucks:[],
+      trucks:[ {
+        id: '12',
+        name: "MLK 20-34",
+        brand: "Mazda",
+        label:"MLK 20-34",
+        value:'12',
+        model: "Corolla",
+        maximum_capacity: 2000.67,
+      },
+        {
+          id: '13',
+          name: "MLK 20-347",
+          label:'MLK 20-347',
+          value:'13',
+          brand: "BMW",
+          model: "Corolla",
+          maximum_capacity: 2000.67,
+        },
+      ],
       options:[],
       file: null,
     }
   },
   methods: {
     onSubmit() {
-      Loading.openNotify();
-      let submit=null
-      if (this.editPage){
-        submit=this.$axios.post('freight-journey/'+this.freight_journey.id,this.freight_journey)
-      }else{
-        submit=this.$axios.post('/freight-journey', this.freight_journey)
-      }
-        submit.then(done=>{
-          Loading.closeNotify()
-          Loading.openSuccess(this.editPage?"Viagem actualizada com sucesso":"Viagem criada com sucesso", 4000)
-          this.$router.push('/viagem')
-        }).catch(error=>{
-          Error.openNotify("Houve um erro durante a criação de viagem", 5000)
-        })
+
     },
     onRejectedfreight_journeyPic() {
 
@@ -288,23 +292,9 @@ export default {
 
       update(() => {
         const needle = val.toLowerCase()
-        this.options=[]
-       this.trucks.filter(v => v.name.toLowerCase().indexOf(needle) > -1).forEach(v=>{ this.options.push(v.name) })
+        this.options= this.trucks.filter(v => v.name.toLowerCase().indexOf(needle) > -1)
         /*this.options=[]
         trucksFiltered.forEach(v=>{ this.options.push(v.name) })*/
-      })
-    }
-  },
-  beforeMount() {
-    this.$axios.get('/vehicle').then(done=>{this.trucks=done.data})
-    let url = location.href
-    if (url.indexOf("edit")>=0){
-      this.editPage = true
-      let urlArray = url.split("/")
-      let id = urlArray[urlArray.length-1]
-      this.$axios.get('freight-journey/'+id).then(done=>{
-        this.freight_journey = done.data
-        this.freight_journey.price_set=this.freight_journey.price_set==1?true:false
       })
     }
   }

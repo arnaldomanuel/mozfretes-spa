@@ -11,7 +11,7 @@
             <div class="row">
               <div class=" col-12 col-lg-6 q-mr-lg">
                 <q-img
-                  src="~assets/img/truck.jpg"
+                  :src="imagePath"
                 >
                   <div class="absolute-bottom text-body1 text-center">
                     Foto do veículo que fará a viagem
@@ -19,10 +19,27 @@
                 </q-img>
                 <div class="q-mt-md">
                   <q-btn  class="q-mr-md" color="secondary" icon="edit" :to="'/viagem/editar/'+freight_journey.id" >Editar</q-btn>
-                  <q-btn color="negative" icon="delete" >Apagar</q-btn>
+                  <q-btn color="negative" @click="confirm=true" icon="delete" >Apagar</q-btn>
                 </div>
               </div>
+
+
               <div class="col-12 col-lg-4">
+
+                <div style="display: inline-block" class="q-mb-md">
+                 <q-btn v-if="freight_journey.company_id!=null" color="primary"> <a  class="img-link" :href="'https://wa.me/'
+                  +company.whatsapp+'?text=Olá'">
+                    <q-img class="img-img-link"  src="~/assets/whatsapp.svg"/>
+                 </a> </q-btn>
+
+                  <q-btn class="q-mx-sm" v-if="freight_journey.status.toLowerCase()=='fechado'" label="Viagem fechada"/>
+
+                  <q-btn class="q-mx-sm" v-if="freight_journey.status.toLowerCase()!='fechado'" @click="closeFreightJouney=true" color="secondary" icon="close" label="Fechar"/>
+                  <q-btn color="secondary" to="/carga" icon="business_center" label="Conectar carga"/>
+                </div>
+
+
+
                <div class="text-h5">Partida</div>
                {{freight_journey.from_location}}
 
@@ -30,7 +47,7 @@
                {{freight_journey.to_location}}
 
                <div class="text-h5 q-mt-md">Preço</div>
-               {{freight_journey.price_negotiate + " "}}
+               {{freight_journey.price_negotiate + " MT"}}
                 <strong>{{resultNegotiate}}</strong>
 
                 <div class="text-h5 q-mt-md">Hora de partida</div>
@@ -39,7 +56,7 @@
                 <div class="text-h5 q-mt-md">Hora de chegada</div>
                 {{freight_journey.to_date}}
                <div class="text-h5 q-mt-md">Capacidade máxima</div>
-               {{freight_journey.truck.maximum_capacity}} KG
+               {{freight_journey.vehicle?freight_journey.vehicle.maximum_capacity +' KG':'Informação indisponível'}}
               </div>
             </div>
 
@@ -47,16 +64,32 @@
 
       <q-separator />
     </q-card>
+      <template>
+        <q-dialog v-model="confirm" persistent>
+          <confirm-delete-freight-journey-dialog :freightJourney="freight_journey"/>
+        </q-dialog>
+      </template>
+      <template>
+        <q-dialog v-model="closeFreightJouney" >
+          <confirm-close-freight-journey-dialog
+            @closeFreightJourneyEE="closeFreightJouneyMethod()"
+            :freight_journey="freight_journey"/>
+        </q-dialog>
+      </template>
     </div>
 </template>
 
 
 <script>
 import HeaderFreightJourney from "./HeaderFreightJourney.vue"
+import ConfirmDeleteFreightJourneyDialog from "src/dialogs/ConfirmDeleteFreightJourneyDialog";
+import ConfirmCloseFreightJourneyDialog from "src/dialogs/ConfirmCloseFreightJourneyDialog";
 export default {
-    components: {HeaderFreightJourney},
+    components: {HeaderFreightJourney,ConfirmCloseFreightJourneyDialog, ConfirmDeleteFreightJourneyDialog},
     data(){
         return {
+          confirm:false,
+          closeFreightJouney:false,
             freight_journey: {
               name: '',
               description: '',
@@ -70,30 +103,61 @@ export default {
               phone_journey: '',
               status: '',
               id: '',
-              truck:{
+              company_id:null,
+              company:{},
+              vehicle:{
                 name: '',
                 brand:'',
                 model: '',
                 maximum_capacity:'700',
-                photo_path:'',
+                photo_path:null,
               },
             },
-            file:null,
+          company: {},
+          vehicle: {},
+          file:null,
         }
     },
   computed:{
     resultNegotiate(){
       return this.freight_journey.price_set==true?'Negociável': 'Não negociável'
+    },
+    imagePath(){
+      return this.$apiPath+(this.freight_journey.vehicle?this.freight_journey.vehicle.photo_path:'img/truckstandard.jpg')
     }
   },
     methods:{
-        onSubmit(){
+      closeFreightJouneyMethod(){
+        console.log("afraid")
+        this.freight_journey.status='Fechado'
+      }
+    },
 
-        },
-        onRejectedTruckPic(){
+  created() {
+    let urlArray= location.href.split("/")
+    let id = urlArray[urlArray.length-1]
+    this.$axios.get('/freight-journey/'+id).then(done=>{this.freight_journey=done.data;
+      console.log(this.freight_journey)
+      this.vehicle=this.freight_journey.vehicle
+      this.$axios.get('/company/'+this.freight_journey.company_id).then(done=>{
+        this.company=done.data
+        console.log(this.freight_journey)
+      })
 
-        },
-    }
+    })
+
+
+  }
 
 }
 </script>
+
+<style>
+.img-link {
+
+}
+.img-img-link{
+  display: inline-block;
+  width: 30px !important;
+}
+</style>

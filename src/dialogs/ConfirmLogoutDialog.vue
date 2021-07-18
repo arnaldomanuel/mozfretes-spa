@@ -1,5 +1,5 @@
 <template>
-   
+
       <q-card>
         <q-card-section class="row items-center">
           <q-avatar icon="logout" color="primary" text-color="white" />
@@ -11,7 +11,7 @@
           <q-btn flat label="Não" color="primary" v-close-popup />
         </q-card-actions>
       </q-card>
-  
+
 </template>
 
 <script>
@@ -19,8 +19,8 @@
 export default {
    props:['confirm'],
    methods:{
-     logout(){
-
+     logout() {
+       this.$store.dispatch("auth/logout");
      }
    },
 }

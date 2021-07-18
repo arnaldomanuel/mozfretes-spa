@@ -1,12 +1,14 @@
 <template>
-    <div>
-      <header-truck/>
 
-        <template>
+  <div>
+      <header-freight-journey/>
+
+      <div class="q-pt-md">
+      <template>
             <div class="q-mt-md">
               <q-table
               @row-click="goTo"
-                title="Veículos"
+                title="Viagens"
                 :data="data"
                 :columns="columns"
                 :filter="filter"
@@ -23,14 +25,14 @@
           </template>
 
   </div>
+  </div>
 </template>
 
 <script>
-import HeaderTruck from "./HeaderTruck.vue"
-
+import HeaderFreightJourney from "./HeaderFreightJourney.vue"
 export default {
-  components: {HeaderTruck},
-  data(){
+    components:{HeaderFreightJourney},
+     data(){
     return {
 
       filter:'',
@@ -46,20 +48,19 @@ export default {
         },
 
         {
-          name: 'name',
+          name: 'from_location',
           required: true,
-          label: 'Nome',
+          label: 'Partida',
           align: 'left',
-          field: row => row.name,
+          field: row => row.from_location,
           format: val => `${val}`,
           sortable: true
         },
+         { name: 'to_location', align: 'left', label: 'Destino', field: 'to_location', sortable: true,  },
+        { name: 'from_date',align: 'left', label: 'Data Saída', field: 'from_date', sortable: true },
+        { name: 'status',align: 'left', label: 'Estado', field: 'status', sortable: false },
 
-        { name: 'brand', align: 'left', label: 'Marca', field: 'brand', sortable: true,  },
-        { name: 'model',align: 'left', label: 'Modelo', field: 'model', sortable: true },
-        { name: 'maximum_capacity',align: 'left', label: 'Capacidade máxima (Kg)', field: 'maximum_capacity', sortable: true },
       ],
-
        data: [],
     }
   },
@@ -67,17 +68,11 @@ export default {
   methods: {
     goTo(evt, row, index){
       console.log(row);
-     this.$router.push("veiculo/"+row.id)
+     this.$router.push("viagem/"+row.id)
     }
   },
-  mounted() {
-    this.$axios.get('/vehicle').then(done=>{
-      this.data=done.data
-
-      console.log(done)
-    }).catch(error=>{
-      console.log(error)
-    })
+  beforeMount() {
+    this.$axios.get('/freight-journey').then(done=>{this.data= done.data})
   }
 }
 </script>

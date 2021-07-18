@@ -39,7 +39,7 @@ export default {
     return authClient.post("/forgot-password", payload);
   },
   getAuthUser() {
-    return authClient.get("/api/users/auth");
+    return authClient.get("/api/user");
   },
   async resetPassword(payload) {
     await authClient.get("/sanctum/csrf-cookie");
@@ -58,4 +58,5 @@ export default {
   updateUser(payload) {
     return authClient.put("/user/profile-information", payload);
   },
+
 };

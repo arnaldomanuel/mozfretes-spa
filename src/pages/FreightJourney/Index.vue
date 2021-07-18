@@ -8,8 +8,12 @@
             <div class="q-mt-md">
               <q-table
               @row-click="goTo"
-                title="Veículos"
-                :data="data"
+                title="Viagens"
+                :data="rows"
+              :loading="loading"
+              :pagination.sync="pagination"
+              binary-state-sort
+              @request="onRequest"
                 :columns="columns"
                 :filter="filter"
                 row-key="id"
@@ -34,7 +38,13 @@ export default {
     components:{HeaderFreightJourney},
      data(){
     return {
-
+      pagination: {
+        sortBy: 'id',
+        descending: false,
+        page: 1,
+        rowsPerPage: 3,
+        rowsNumber: 10
+      },
       filter:'',
       columns: [
         {
@@ -56,22 +66,22 @@ export default {
           format: val => `${val}`,
           sortable: true
         },
-        { name: 'maximum_capacity',align: 'left', label: 'Capacidade máxima (Kg)', field: 'maximum_capacity', sortable: true },
-        { name: 'to_location', align: 'left', label: 'Destino', field: 'to_location', sortable: true,  },
+         { name: 'to_location', align: 'left', label: 'Destino', field: 'to_location', sortable: true,  },
         { name: 'from_date',align: 'left', label: 'Data Saída', field: 'from_date', sortable: true },
+        { name: 'status',align: 'left', label: 'Estado', field: 'status', sortable: false },
 
       ],
-
-       data: [
-        {
-          id: '12',
-          from_location: "Maputo/Massinga",
-          to_location: "Mazda",
-          from_date: "Corolla",
-          maximum_capacity: 2000.67,
-        },
-
-        ],
+      loading:false,
+       data: [],
+      rows: [],
+      status:'',
+    }
+  },
+  computed:{
+    params: function (){
+      let params = new URLSearchParams(location.search)
+      console.log('logs ',  params.get('status'))
+      return params
     }
   },
 
@@ -79,7 +89,55 @@ export default {
     goTo(evt, row, index){
       console.log(row);
      this.$router.push("viagem/"+row.id)
+    },
+    async  getRowsNumberCount(filter) {
+      let rows = 0
+      await this.$axios.get('freight-journey/search/count?filter=' + filter+"&news="+this.params.get("news")).then(done => {
+        rows = done.data
+        rows = parseInt(rows)
+      })
+      return rows
+    },
+    async fetchFromServer(startRow, fetchCount, filter, sortBy, descending) {
+      let dataFromServer = []
+      await this.$axios.get(`/freight-journey/global/search/?filter=${filter}&startRow=${startRow}&fetchCount=${fetchCount}&sortBy=${sortBy}&descending=${descending}&status=${this.status}&news=${this.params.get("news")}`).then(done => {
+        console.log('done', done.data)
+        dataFromServer = done.data
+      })
+      return dataFromServer
+    },
+    async onRequest(props) {
+      console.log('props', props)
+      const {page, rowsPerPage, sortBy, descending} = props ? props.pagination : this.pagination
+      const filter = this.filter
+      this.loading = true
+      this.pagination.rowsNumber = await this.getRowsNumberCount(filter)
+      // get all rows if "All" (0) is selected
+      const fetchCount = rowsPerPage === 0 ? this.pagination.rowsNumber : rowsPerPage
+
+      const startRow = (page - 1) * rowsPerPage
+      const returnedData = await this.fetchFromServer(startRow, fetchCount, filter, sortBy, descending)
+
+
+      this.rows.splice(0, this.rows.length, ...returnedData)
+
+      console.log('rows ', this.rows)
+      // don't forget to update local pagination object
+      this.pagination.page = page
+      this.pagination.rowsPerPage = rowsPerPage
+      this.pagination.sortBy = sortBy
+      this.pagination.descending = descending
+      console.log('pagination', this.pagination)
+
+      // ...and turn of loading indicator
+      this.loading = false
     }
-  }
+  },
+  async beforeMount() {
+    let numberOfRows = await this.getRowsNumberCount('')
+    this.pagination.rowsNumber=numberOfRows
+    this.onRequest()
+  },
+
 }
 </script>

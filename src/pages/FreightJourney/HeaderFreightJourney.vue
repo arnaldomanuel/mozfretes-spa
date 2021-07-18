@@ -13,6 +13,7 @@
             <div class="">
                 <q-btn to="/viagem/criar" class="q-mr-lg" color="secondary" label="Criar" icon="add" />
                 <q-btn to="/viagem" class="q-mr-lg" color="secondary" label="Listar" icon="visibility" />
+                <q-btn to="/viagem?news=novo" class="q-mr-lg" color="secondary" label="Listar novos" icon="visibility" />
             </div>
             </template>
       </q-card-section>
