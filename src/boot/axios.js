@@ -14,5 +14,5 @@ const webAxios = axios.create({
 
 Vue.prototype.$axios = axiosInstance
 Vue.prototype.$webAxios = webAxios
-Vue.prototype.$apiPath="http://localhost:8000/"
+Vue.prototype.$apiPath="http://mozfretesapi.expert.co.mz/"
 Vue.prototype.$store = store
